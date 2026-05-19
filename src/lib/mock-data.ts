@@ -113,7 +113,7 @@ export function useWalletMutations() {
   const transfer = useMutation({
     mutationFn: async (vars: { username: string; amount: number; notes?: string }) => {
       const { error } = await supabase.rpc("transfer_points", {
-        _username: vars.username, _amount: vars.amount, _notes: vars.notes ?? null,
+        _username: vars.username, _amount: vars.amount, _notes: vars.notes ?? "",
       });
       if (error) throw error;
     },
