@@ -1,26 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { BalanceCard } from "@/components/wallet/balance-card";
+import { QuickActions } from "@/components/wallet/quick-actions";
+import { RecentTransactions } from "@/components/wallet/recent-transactions";
+import { useWallet } from "@/lib/mock-data";
 
-export const Route = createFileRoute("/")({
-  component: Index,
-});
+export const Route = createFileRoute("/")({ component: Home });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Home() {
+  const { balance, transactions } = useWallet();
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="mx-auto max-w-2xl space-y-6 p-4">
+      <BalanceCard balance={balance} />
+      <QuickActions />
+      <RecentTransactions transactions={transactions.slice(0, 5)} />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
