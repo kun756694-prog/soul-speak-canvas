@@ -79,6 +79,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Buy, sell, and manage your crypto assets with secure P2P trading" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "CryptoWallet - P2P Trading & Wallet" },
+      { name: "twitter:description", content: "Buy, sell, and manage your crypto assets with secure P2P trading" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/1ac9c5d1-6f41-4c54-8c26-b5f7724b9848" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/1ac9c5d1-6f41-4c54-8c26-b5f7724b9848" },
     ],
     links: [
       {
