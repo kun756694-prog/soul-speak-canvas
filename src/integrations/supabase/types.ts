@@ -14,16 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          completion_rate: number
+          created_at: string
+          id: string
+          kyc_level: number
+          name: string
+          total_trades: number
+        }
+        Insert: {
+          completion_rate?: number
+          created_at?: string
+          id: string
+          kyc_level?: number
+          name?: string
+          total_trades?: number
+        }
+        Update: {
+          completion_rate?: number
+          created_at?: string
+          id?: string
+          kyc_level?: number
+          name?: string
+          total_trades?: number
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          fee: number | null
+          id: string
+          notes: string | null
+          status: Database["public"]["Enums"]["tx_status"]
+          type: Database["public"]["Enums"]["tx_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["tx_status"]
+          type: Database["public"]["Enums"]["tx_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["tx_status"]
+          type?: Database["public"]["Enums"]["tx_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          balance: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      deposit_points: { Args: { _amount: number }; Returns: undefined }
+      transfer_points: {
+        Args: { _amount: number; _notes: string; _username: string }
+        Returns: undefined
+      }
+      withdraw_points: {
+        Args: { _address: string; _amount: number }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      tx_status: "completed" | "pending" | "failed" | "cancelled"
+      tx_type:
+        | "deposit"
+        | "withdraw"
+        | "p2p_buy"
+        | "p2p_sell"
+        | "transfer_in"
+        | "transfer_out"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +245,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      tx_status: ["completed", "pending", "failed", "cancelled"],
+      tx_type: [
+        "deposit",
+        "withdraw",
+        "p2p_buy",
+        "p2p_sell",
+        "transfer_in",
+        "transfer_out",
+      ],
+    },
   },
 } as const
