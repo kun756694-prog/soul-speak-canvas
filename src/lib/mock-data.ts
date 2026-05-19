@@ -1,4 +1,9 @@
-// Mock data store with simple subscriber pattern
+// Static reference data (assets, merchants) + types + helpers.
+// Wallet balance and transactions are now persisted in Supabase — see src/lib/wallet-api.ts.
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+
 export interface Asset {
   symbol: string; name: string; balance: number; usdValue: number; change24h: number; color: string;
 }
@@ -7,22 +12,12 @@ export interface Merchant {
   price: number; available: number; minLimit: number; maxLimit: number;
   paymentMethods: string[]; crypto: string; fiat: string; type: "buy" | "sell"; avgReleaseTime: string;
 }
+export type TxType = "deposit" | "withdraw" | "p2p_buy" | "p2p_sell" | "transfer_in" | "transfer_out";
+export type TxStatus = "completed" | "pending" | "failed" | "cancelled";
 export interface Transaction {
-  id: string;
-  type: "deposit" | "withdraw" | "p2p_buy" | "p2p_sell" | "transfer_in" | "transfer_out";
-  amount: number; currency: string; status: "completed" | "pending" | "failed" | "cancelled";
-  created_at: string; fee?: number; notes?: string;
+  id: string; type: TxType; amount: number; currency: string; status: TxStatus;
+  created_at: string; fee?: number | null; notes?: string | null;
 }
-export interface User {
-  id: string; name: string; email: string; kycLevel: number; isVerified: boolean;
-  totalTrades: number; completionRate: number; joinedAt: Date;
-}
-
-export const currentUser: User = {
-  id: "user-001", name: "Aung Kyaw", email: "aung.kyaw@email.com",
-  kycLevel: 2, isVerified: true, totalTrades: 45, completionRate: 98.5,
-  joinedAt: new Date("2023-06-15"),
-};
 
 export const walletAssets: Asset[] = [
   { symbol: "BTC", name: "Bitcoin", balance: 0.0524, usdValue: 3562.18, change24h: 2.34, color: "#F7931A" },
@@ -31,15 +26,6 @@ export const walletAssets: Asset[] = [
   { symbol: "BNB", name: "BNB", balance: 12.5, usdValue: 3875, change24h: 3.45, color: "#F0B90B" },
   { symbol: "SOL", name: "Solana", balance: 45.23, usdValue: 6332.2, change24h: 5.67, color: "#00FFA3" },
   { symbol: "XRP", name: "Ripple", balance: 1250, usdValue: 625, change24h: -0.89, color: "#23292F" },
-];
-
-const initialTxs: Transaction[] = [
-  { id: "tx-001", type: "p2p_buy", amount: 500, currency: "POINT", status: "completed", created_at: new Date(Date.now() - 2 * 3600e3).toISOString() },
-  { id: "tx-002", type: "deposit", amount: 1000, currency: "POINT", status: "completed", created_at: new Date(Date.now() - 5 * 3600e3).toISOString() },
-  { id: "tx-003", type: "withdraw", amount: 200, currency: "POINT", status: "completed", created_at: new Date(Date.now() - 86400e3).toISOString(), fee: 1 },
-  { id: "tx-004", type: "p2p_sell", amount: 300, currency: "POINT", status: "completed", created_at: new Date(Date.now() - 2 * 86400e3).toISOString() },
-  { id: "tx-005", type: "transfer_out", amount: 50, currency: "POINT", status: "pending", created_at: new Date(Date.now() - 1800e3).toISOString() },
-  { id: "tx-006", type: "deposit", amount: 5000, currency: "POINT", status: "completed", created_at: new Date(Date.now() - 3 * 86400e3).toISOString() },
 ];
 
 export const buyMerchants: Merchant[] = [
@@ -55,51 +41,6 @@ export const sellMerchants: Merchant[] = [
   { id: "8", name: "SafeTrade_MM", isVerified: true, completionRate: 99.5, totalTrades: 1890, price: 4815, available: 150000, minLimit: 100000, maxLimit: 15_000_000, paymentMethods: ["KBZPay", "AYA Pay"], crypto: "POINT", fiat: "MMK", type: "sell", avgReleaseTime: "3 min" },
 ];
 
-// In-memory reactive store
-type State = { balance: number; transactions: Transaction[] };
-let state: State = { balance: 10000, transactions: initialTxs };
-const listeners = new Set<() => void>();
-const emit = () => listeners.forEach((l) => l());
-
-export const walletStore = {
-  getState: () => state,
-  subscribe: (l: () => void) => { listeners.add(l); return () => listeners.delete(l); },
-  deposit(amount: number) {
-    state = {
-      balance: state.balance + amount,
-      transactions: [{ id: `tx-${Date.now()}`, type: "deposit", amount, currency: "POINT", status: "completed", created_at: new Date().toISOString() }, ...state.transactions],
-    };
-    emit();
-  },
-  withdraw(amount: number, address: string) {
-    if (amount > state.balance) return { error: "Insufficient balance" };
-    state = {
-      balance: state.balance - amount,
-      transactions: [{ id: `tx-${Date.now()}`, type: "withdraw", amount, currency: "POINT", status: "completed", created_at: new Date().toISOString(), notes: `To ${address}` }, ...state.transactions],
-    };
-    emit();
-    return { success: true };
-  },
-  transfer(username: string, amount: number, notes?: string) {
-    if (amount > state.balance) return { error: "Insufficient balance" };
-    state = {
-      balance: state.balance - amount,
-      transactions: [{ id: `tx-${Date.now()}`, type: "transfer_out", amount, currency: "POINT", status: "completed", created_at: new Date().toISOString(), notes: notes || `To ${username}` }, ...state.transactions],
-    };
-    emit();
-    return { success: true, recipient: username };
-  },
-};
-
-import { useSyncExternalStore } from "react";
-export function useWallet() {
-  return useSyncExternalStore(
-    walletStore.subscribe,
-    walletStore.getState,
-    walletStore.getState,
-  );
-}
-
 export function formatNumber(num: number, decimals = 2) {
   return num.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
@@ -110,4 +51,88 @@ export function getTimeAgo(date: Date | string) {
   if (s < 3600) return `${Math.floor(s / 60)}m ago`;
   if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
   return `${Math.floor(s / 86400)}d ago`;
+}
+
+// --- Supabase-backed wallet data ---
+export function useWallet() {
+  const { user } = useAuth();
+  const uid = user?.id;
+
+  const balanceQ = useQuery({
+    queryKey: ["wallet", uid],
+    enabled: !!uid,
+    queryFn: async (): Promise<number> => {
+      const { data, error } = await supabase.from("wallets").select("balance").eq("user_id", uid!).maybeSingle();
+      if (error) throw error;
+      return Number(data?.balance ?? 0);
+    },
+  });
+
+  const txQ = useQuery({
+    queryKey: ["transactions", uid],
+    enabled: !!uid,
+    queryFn: async (): Promise<Transaction[]> => {
+      const { data, error } = await supabase
+        .from("transactions").select("*")
+        .eq("user_id", uid!).order("created_at", { ascending: false }).limit(100);
+      if (error) throw error;
+      return (data ?? []) as Transaction[];
+    },
+  });
+
+  return {
+    balance: balanceQ.data ?? 0,
+    transactions: txQ.data ?? [],
+    loading: balanceQ.isLoading || txQ.isLoading,
+  };
+}
+
+export function useWalletMutations() {
+  const qc = useQueryClient();
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["wallet"] });
+    qc.invalidateQueries({ queryKey: ["transactions"] });
+  };
+
+  const deposit = useMutation({
+    mutationFn: async (amount: number) => {
+      const { error } = await supabase.rpc("deposit_points", { _amount: amount });
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const withdraw = useMutation({
+    mutationFn: async (vars: { amount: number; address: string }) => {
+      const { error } = await supabase.rpc("withdraw_points", { _amount: vars.amount, _address: vars.address });
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const transfer = useMutation({
+    mutationFn: async (vars: { username: string; amount: number; notes?: string }) => {
+      const { error } = await supabase.rpc("transfer_points", {
+        _username: vars.username, _amount: vars.amount, _notes: vars.notes ?? null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  return { deposit, withdraw, transfer };
+}
+
+export function useProfile() {
+  const { user } = useAuth();
+  const uid = user?.id;
+  return useQuery({
+    queryKey: ["profile", uid],
+    enabled: !!uid,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", uid!).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
 }
