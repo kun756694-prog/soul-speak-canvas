@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { walletStore } from "@/lib/mock-data";
+import { useWalletMutations } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/deposit")({ component: DepositPage });
 
@@ -15,17 +15,25 @@ function DepositPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { deposit } = useWalletMutations();
   const quickAmounts = [100, 500, 1000, 5000];
 
-  const handleDeposit = (e: React.FormEvent) => {
+  const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     const n = parseFloat(amount);
     if (isNaN(n) || n <= 0) { setError("Please enter a valid amount"); return; }
     setLoading(true);
-    walletStore.deposit(n);
-    setSuccess(`Successfully deposited ${n} POINT!`);
-    setAmount("");
-    setTimeout(() => navigate({ to: "/" }), 1500);
+    try {
+      await deposit.mutateAsync(n);
+      setSuccess(`Successfully deposited ${n} POINT!`);
+      setAmount("");
+      setTimeout(() => navigate({ to: "/" }), 1500);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Deposit failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

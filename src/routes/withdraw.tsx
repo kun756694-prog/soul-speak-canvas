@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useWallet, walletStore } from "@/lib/mock-data";
+import { useWallet, useWalletMutations } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/withdraw")({ component: WithdrawPage });
 
@@ -18,17 +18,22 @@ function WithdrawPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { withdraw } = useWalletMutations();
 
   const n = parseFloat(amount) || 0;
   const isValid = address.length > 5 && n > 0 && n <= balance;
 
-  const handleWithdraw = () => {
+  const handleWithdraw = async () => {
     setShowConfirm(false);
-    const res = walletStore.withdraw(n, address);
-    if (res.error) { setError(res.error); return; }
-    setSuccess(`Successfully withdrew ${n} POINT!`);
-    setAmount(""); setAddress("");
-    setTimeout(() => navigate({ to: "/" }), 1500);
+    setError(null);
+    try {
+      await withdraw.mutateAsync({ amount: n, address });
+      setSuccess(`Successfully withdrew ${n} POINT!`);
+      setAmount(""); setAddress("");
+      setTimeout(() => navigate({ to: "/" }), 1500);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Withdraw failed");
+    }
   };
 
   return (

@@ -1,10 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { BadgeCheck, ChevronRight, Copy, LogOut, Shield, Bell, HelpCircle, FileText, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { currentUser } from "@/lib/mock-data";
+import { useAuth } from "@/hooks/use-auth";
+import { useProfile } from "@/lib/mock-data";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/profile")({ component: ProfilePage });
 
@@ -21,27 +23,48 @@ const menuItems = [
 ];
 
 function ProfilePage() {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const { data: profile } = useProfile();
   const [copied, setCopied] = useState(false);
+
+  if (!loading && !user) {
+    navigate({ to: "/auth" });
+    return null;
+  }
+  if (!user) return <div className="p-8 text-center text-muted-foreground">Loading…</div>;
+
+  const name = profile?.name || user.email?.split("@")[0] || "User";
+  const level = profile?.kyc_level ?? 1;
+  const totalTrades = profile?.total_trades ?? 0;
+  const completionRate = Number(profile?.completion_rate ?? 0);
+  const joinedAt = profile?.created_at ? new Date(profile.created_at) : new Date(user.created_at);
+
   const copyId = () => {
-    navigator.clipboard.writeText(currentUser.id);
+    navigator.clipboard.writeText(user.id);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-  const level = currentUser.kycLevel;
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/auth" });
+  };
+
   return (
     <div className="mx-auto max-w-2xl space-y-4 p-4">
       <Card className="border-border">
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary text-2xl font-bold">{currentUser.name[0]}</div>
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary text-2xl font-bold">{name[0]?.toUpperCase()}</div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold">{currentUser.name}</h1>
-                {currentUser.isVerified && <BadgeCheck className="h-5 w-5 text-primary" />}
+                <h1 className="text-xl font-bold">{name}</h1>
+                {level >= 2 && <BadgeCheck className="h-5 w-5 text-primary" />}
               </div>
-              <p className="text-sm text-muted-foreground">{currentUser.email}</p>
+              <p className="text-sm text-muted-foreground">{user.email}</p>
               <div className="mt-2 flex items-center gap-2">
-                <code className="rounded bg-secondary px-2 py-0.5 text-xs text-muted-foreground">UID: {currentUser.id}</code>
+                <code className="rounded bg-secondary px-2 py-0.5 text-xs text-muted-foreground">UID: {user.id.slice(0, 8)}…</code>
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={copyId}>
                   {copied ? <Check className="h-3 w-3 text-[oklch(0.72_0.19_160)]" /> : <Copy className="h-3 w-3" />}
                 </Button>
@@ -76,12 +99,12 @@ function ProfilePage() {
         <CardHeader className="pb-2"><CardTitle className="text-lg">Trading Statistics</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-lg bg-secondary p-4 text-center"><p className="text-2xl font-bold text-primary">{currentUser.totalTrades}</p><p className="text-sm text-muted-foreground">Total Trades</p></div>
-            <div className="rounded-lg bg-secondary p-4 text-center"><p className="text-2xl font-bold text-[oklch(0.72_0.19_160)]">{currentUser.completionRate}%</p><p className="text-sm text-muted-foreground">Completion Rate</p></div>
+            <div className="rounded-lg bg-secondary p-4 text-center"><p className="text-2xl font-bold text-primary">{totalTrades}</p><p className="text-sm text-muted-foreground">Total Trades</p></div>
+            <div className="rounded-lg bg-secondary p-4 text-center"><p className="text-2xl font-bold text-[oklch(0.72_0.19_160)]">{completionRate}%</p><p className="text-sm text-muted-foreground">Completion Rate</p></div>
           </div>
           <div className="mt-4 flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Member since</span>
-            <span>{currentUser.joinedAt.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</span>
+            <span>{joinedAt.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</span>
           </div>
         </CardContent>
       </Card>
@@ -100,7 +123,7 @@ function ProfilePage() {
         </CardContent>
       </Card>
 
-      <Button variant="destructive" className="w-full gap-2"><LogOut className="h-4 w-4" />Log Out</Button>
+      <Button variant="destructive" className="w-full gap-2" onClick={logout}><LogOut className="h-4 w-4" />Log Out</Button>
     </div>
   );
 }

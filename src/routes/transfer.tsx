@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { walletStore } from "@/lib/mock-data";
+import { useWalletMutations } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/transfer")({ component: TransferPage });
 
@@ -16,16 +16,21 @@ function TransferPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { transfer } = useWalletMutations();
 
-  const handleTransfer = (e: React.FormEvent) => {
+  const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     const n = parseFloat(amount);
     if (isNaN(n) || n <= 0) { setError("Please enter a valid amount"); return; }
-    const res = walletStore.transfer(username, n, notes || undefined);
-    if ("error" in res && res.error) { setError(res.error); return; }
-    setSuccess(`Successfully sent ${n} POINT to ${username}!`);
-    setUsername(""); setAmount(""); setNotes("");
-    setTimeout(() => navigate({ to: "/" }), 2000);
+    try {
+      await transfer.mutateAsync({ username, amount: n, notes: notes || undefined });
+      setSuccess(`Successfully sent ${n} POINT to ${username}!`);
+      setUsername(""); setAmount(""); setNotes("");
+      setTimeout(() => navigate({ to: "/" }), 2000);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Transfer failed");
+    }
   };
 
   return (
