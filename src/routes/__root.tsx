@@ -108,12 +108,18 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { Header } from "@/components/layout/header";
+import { BottomNav } from "@/components/layout/bottom-nav";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="flex min-h-screen flex-col bg-background">
+        <Header />
+        <main className="flex-1 pb-16 md:pb-0"><Outlet /></main>
+        <BottomNav />
+      </div>
     </QueryClientProvider>
   );
 }
