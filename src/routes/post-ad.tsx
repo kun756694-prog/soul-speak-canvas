@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useGeo } from "@/hooks/use-geo";
+import { useKycStatus } from "@/hooks/use-kyc";
+import { KycBadge } from "@/components/kyc/kyc-badge";
 import { CURRENCIES, PAYMENT_METHODS, isSupportedCurrency } from "@/lib/currencies";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
