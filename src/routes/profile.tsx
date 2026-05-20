@@ -1,11 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { BadgeCheck, ChevronRight, Copy, LogOut, Shield, Bell, HelpCircle, FileText, Check } from "lucide-react";
+import { BadgeCheck, ChevronRight, Copy, LogOut, Shield, Bell, HelpCircle, FileText, Check, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/lib/mock-data";
+import { useKycStatus, useIsAdmin } from "@/hooks/use-kyc";
+import { KycBadge } from "@/components/kyc/kyc-badge";
+import { KycModal } from "@/components/kyc/kyc-modal";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/profile")({ component: ProfilePage });
@@ -26,7 +29,10 @@ function ProfilePage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { data: profile } = useProfile();
+  const { data: kycStatus = "unverified" } = useKycStatus();
+  const { data: isAdmin } = useIsAdmin();
   const [copied, setCopied] = useState(false);
+  const [kycOpen, setKycOpen] = useState(false);
 
   if (!loading && !user) {
     navigate({ to: "/auth" });
@@ -73,6 +79,30 @@ function ProfilePage() {
           </div>
         </CardContent>
       </Card>
+
+      <Card className="border-border">
+        <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-lg"><ShieldCheck className="h-5 w-5 text-primary" />Identity Verification</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium">Verification status</p>
+              <p className="text-xs text-muted-foreground">Required for P2P trading</p>
+            </div>
+            <KycBadge status={kycStatus} />
+          </div>
+          {kycStatus === "unverified" || kycStatus === "rejected" ? (
+            <Button className="w-full" onClick={() => setKycOpen(true)}>
+              {kycStatus === "rejected" ? "Resubmit Identity" : "Verify Identity"}
+            </Button>
+          ) : kycStatus === "pending" ? (
+            <p className="text-xs text-muted-foreground">Your submission is under review.</p>
+          ) : null}
+          {isAdmin && (
+            <Button asChild variant="outline" className="w-full"><Link to="/admin/kyc">Open admin review</Link></Button>
+          )}
+        </CardContent>
+      </Card>
+
 
       <Card className="border-border">
         <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-lg"><Shield className="h-5 w-5 text-primary" />Verification Level</CardTitle></CardHeader>
@@ -124,6 +154,7 @@ function ProfilePage() {
       </Card>
 
       <Button variant="destructive" className="w-full gap-2" onClick={logout}><LogOut className="h-4 w-4" />Log Out</Button>
+      <KycModal open={kycOpen} onOpenChange={setKycOpen} />
     </div>
   );
 }
