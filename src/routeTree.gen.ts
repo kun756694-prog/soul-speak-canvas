@@ -13,6 +13,7 @@ import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PostAdRouteImport } from './routes/post-ad'
 import { Route as P2pRouteImport } from './routes/p2p'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DepositRouteImport } from './routes/deposit'
@@ -37,6 +38,11 @@ const TransferRoute = TransferRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostAdRoute = PostAdRouteImport.update({
+  id: '/post-ad',
+  path: '/post-ad',
   getParentRoute: () => rootRouteImport,
 } as any)
 const P2pRoute = P2pRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/deposit': typeof DepositRoute
   '/history': typeof HistoryRoute
   '/p2p': typeof P2pRoute
+  '/post-ad': typeof PostAdRoute
   '/profile': typeof ProfileRoute
   '/transfer': typeof TransferRoute
   '/wallet': typeof WalletRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/deposit': typeof DepositRoute
   '/history': typeof HistoryRoute
   '/p2p': typeof P2pRoute
+  '/post-ad': typeof PostAdRoute
   '/profile': typeof ProfileRoute
   '/transfer': typeof TransferRoute
   '/wallet': typeof WalletRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/deposit': typeof DepositRoute
   '/history': typeof HistoryRoute
   '/p2p': typeof P2pRoute
+  '/post-ad': typeof PostAdRoute
   '/profile': typeof ProfileRoute
   '/transfer': typeof TransferRoute
   '/wallet': typeof WalletRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/deposit'
     | '/history'
     | '/p2p'
+    | '/post-ad'
     | '/profile'
     | '/transfer'
     | '/wallet'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/deposit'
     | '/history'
     | '/p2p'
+    | '/post-ad'
     | '/profile'
     | '/transfer'
     | '/wallet'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/deposit'
     | '/history'
     | '/p2p'
+    | '/post-ad'
     | '/profile'
     | '/transfer'
     | '/wallet'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   DepositRoute: typeof DepositRoute
   HistoryRoute: typeof HistoryRoute
   P2pRoute: typeof P2pRoute
+  PostAdRoute: typeof PostAdRoute
   ProfileRoute: typeof ProfileRoute
   TransferRoute: typeof TransferRoute
   WalletRoute: typeof WalletRoute
@@ -175,6 +188,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/post-ad': {
+      id: '/post-ad'
+      path: '/post-ad'
+      fullPath: '/post-ad'
+      preLoaderRoute: typeof PostAdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/p2p': {
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   DepositRoute: DepositRoute,
   HistoryRoute: HistoryRoute,
   P2pRoute: P2pRoute,
+  PostAdRoute: PostAdRoute,
   ProfileRoute: ProfileRoute,
   TransferRoute: TransferRoute,
   WalletRoute: WalletRoute,

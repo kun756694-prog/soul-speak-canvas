@@ -130,6 +130,8 @@ function AuthSync() {
   return null;
 }
 
+import { Toaster } from "@/components/ui/sonner";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
@@ -140,6 +142,7 @@ function RootComponent() {
         <main className="flex-1 pb-16 md:pb-0"><Outlet /></main>
         <BottomNav />
       </div>
+      <Toaster />
     </QueryClientProvider>
   );
 }
