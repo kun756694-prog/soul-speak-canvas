@@ -23,6 +23,7 @@ function PostAdPage() {
   const navigate = useNavigate();
   const geo = useGeo();
   const queryClient = useQueryClient();
+  const { data: kycStatus = "unverified", isLoading: kycLoading } = useKycStatus();
 
   const [type, setType] = useState<"buy" | "sell">("sell");
   const [currency, setCurrency] = useState<string>("USD");
