@@ -154,6 +154,7 @@ function ProfilePage() {
       </Card>
 
       <Button variant="destructive" className="w-full gap-2" onClick={logout}><LogOut className="h-4 w-4" />Log Out</Button>
+      <KycModal open={kycOpen} onOpenChange={setKycOpen} />
     </div>
   );
 }
