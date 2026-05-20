@@ -80,6 +80,16 @@ function PostAdPage() {
       </div>
     );
   }
+  if (!kycLoading && kycStatus !== "verified") {
+    return (
+      <div className="mx-auto max-w-md p-6 text-center space-y-3">
+        <div className="flex justify-center"><KycBadge status={kycStatus} /></div>
+        <h2 className="text-lg font-semibold">Identity verification required</h2>
+        <p className="text-sm text-muted-foreground">Please complete your Identity Verification (KYC) to unlock P2P trading.</p>
+        <Button asChild><Link to="/profile">Go to verification</Link></Button>
+      </div>
+    );
+  }
 
   const toggleMethod = (m: string) =>
     setMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]));
