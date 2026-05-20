@@ -212,6 +212,24 @@ function P2PPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={kycGateOpen} onOpenChange={setKycGateOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><ShieldAlert className="h-5 w-5 text-destructive" />Identity verification required</DialogTitle>
+            <DialogDescription>Please complete your Identity Verification (KYC) to unlock P2P trading.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setKycGateOpen(false)}>Later</Button>
+            {kycStatus === "pending" ? (
+              <Button disabled>Pending review…</Button>
+            ) : (
+              <Button onClick={() => { setKycGateOpen(false); setKycFormOpen(true); }}>Verify Identity</Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <KycModal open={kycFormOpen} onOpenChange={setKycFormOpen} />
     </div>
   );
 }
