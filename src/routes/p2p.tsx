@@ -33,6 +33,8 @@ interface Ad {
 
 function P2PPage() {
   const geo = useGeo();
+  const navigate = useNavigate();
+  const { data: kycStatus = "unverified" } = useKycStatus();
   const [tradeType, setTradeType] = useState<"buy" | "sell">("buy");
   const [selectedFiat, setSelectedFiat] = useState<string>("USD");
   const [fiatTouched, setFiatTouched] = useState(false);
@@ -40,6 +42,13 @@ function P2PPage() {
   const [selected, setSelected] = useState<Ad | null>(null);
   const [orderAmount, setOrderAmount] = useState("");
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [kycGateOpen, setKycGateOpen] = useState(false);
+  const [kycFormOpen, setKycFormOpen] = useState(false);
+
+  const handlePostAd = () => {
+    if (kycStatus === "verified") navigate({ to: "/post-ad" });
+    else setKycGateOpen(true);
+  };
 
   // Apply auto-detected currency once (only if user hasn't manually changed it)
   useEffect(() => {
