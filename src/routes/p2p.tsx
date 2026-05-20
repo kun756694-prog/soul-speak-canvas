@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { BadgeCheck, Loader2, MapPin, Plus, RefreshCw } from "lucide-react";
+import { BadgeCheck, Loader2, MapPin, Plus, RefreshCw, ShieldAlert } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { formatNumber } from "@/lib/mock-data";
 import { CURRENCIES, isSupportedCurrency } from "@/lib/currencies";
 import { useGeo } from "@/hooks/use-geo";
+import { useKycStatus } from "@/hooks/use-kyc";
+import { KycModal } from "@/components/kyc/kyc-modal";
 
 export const Route = createFileRoute("/p2p")({ component: P2PPage });
 
