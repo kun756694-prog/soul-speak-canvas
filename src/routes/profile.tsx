@@ -1,11 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { BadgeCheck, ChevronRight, Copy, LogOut, Shield, Bell, HelpCircle, FileText, Check } from "lucide-react";
+import { BadgeCheck, ChevronRight, Copy, LogOut, Shield, Bell, HelpCircle, FileText, Check, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/lib/mock-data";
+import { useKycStatus, useIsAdmin } from "@/hooks/use-kyc";
+import { KycBadge } from "@/components/kyc/kyc-badge";
+import { KycModal } from "@/components/kyc/kyc-modal";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/profile")({ component: ProfilePage });
