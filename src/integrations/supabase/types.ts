@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      kyc_submissions: {
+        Row: {
+          document_path: string
+          full_name: string
+          id: string
+          id_type: string
+          notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["kyc_status"]
+          submitted_at: string
+          user_id: string
+        }
+        Insert: {
+          document_path: string
+          full_name: string
+          id?: string
+          id_type: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["kyc_status"]
+          submitted_at?: string
+          user_id: string
+        }
+        Update: {
+          document_path?: string
+          full_name?: string
+          id?: string
+          id_type?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["kyc_status"]
+          submitted_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       p2p_ads: {
         Row: {
           available: number
@@ -74,6 +113,7 @@ export type Database = {
           created_at: string
           id: string
           kyc_level: number
+          kyc_status: Database["public"]["Enums"]["kyc_status"]
           name: string
           total_trades: number
         }
@@ -82,6 +122,7 @@ export type Database = {
           created_at?: string
           id: string
           kyc_level?: number
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
           name?: string
           total_trades?: number
         }
@@ -90,6 +131,7 @@ export type Database = {
           created_at?: string
           id?: string
           kyc_level?: number
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
           name?: string
           total_trades?: number
         }
@@ -131,6 +173,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       wallets: {
         Row: {
           balance: number
@@ -155,6 +218,13 @@ export type Database = {
     }
     Functions: {
       deposit_points: { Args: { _amount: number }; Returns: undefined }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       transfer_points: {
         Args: { _amount: number; _notes: string; _username: string }
         Returns: undefined
@@ -166,6 +236,8 @@ export type Database = {
     }
     Enums: {
       ad_type: "buy" | "sell"
+      app_role: "admin" | "user"
+      kyc_status: "unverified" | "pending" | "verified" | "rejected"
       tx_status: "completed" | "pending" | "failed" | "cancelled"
       tx_type:
         | "deposit"
@@ -302,6 +374,8 @@ export const Constants = {
   public: {
     Enums: {
       ad_type: ["buy", "sell"],
+      app_role: ["admin", "user"],
+      kyc_status: ["unverified", "pending", "verified", "rejected"],
       tx_status: ["completed", "pending", "failed", "cancelled"],
       tx_type: [
         "deposit",
