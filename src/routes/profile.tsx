@@ -29,7 +29,10 @@ function ProfilePage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { data: profile } = useProfile();
+  const { data: kycStatus = "unverified" } = useKycStatus();
+  const { data: isAdmin } = useIsAdmin();
   const [copied, setCopied] = useState(false);
+  const [kycOpen, setKycOpen] = useState(false);
 
   if (!loading && !user) {
     navigate({ to: "/auth" });
