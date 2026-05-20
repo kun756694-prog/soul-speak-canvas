@@ -104,7 +104,7 @@ function P2PPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button asChild size="sm"><Link to="/post-ad"><Plus className="mr-1 h-4 w-4" />Post Ad</Link></Button>
+          <Button size="sm" onClick={handlePostAd}><Plus className="mr-1 h-4 w-4" />Post Ad</Button>
           <Button variant="outline" size="icon" onClick={() => adsQ.refetch()}><RefreshCw className={`h-4 w-4 ${adsQ.isFetching ? "animate-spin" : ""}`} /></Button>
         </div>
       </div>
