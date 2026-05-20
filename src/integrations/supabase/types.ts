@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      p2p_ads: {
+        Row: {
+          available: number
+          country_code: string | null
+          created_at: string
+          crypto: string
+          currency: string
+          id: string
+          is_active: boolean
+          max_limit: number
+          min_limit: number
+          notes: string | null
+          payment_methods: string[]
+          price: number
+          type: Database["public"]["Enums"]["ad_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available: number
+          country_code?: string | null
+          created_at?: string
+          crypto?: string
+          currency: string
+          id?: string
+          is_active?: boolean
+          max_limit: number
+          min_limit: number
+          notes?: string | null
+          payment_methods?: string[]
+          price: number
+          type: Database["public"]["Enums"]["ad_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available?: number
+          country_code?: string | null
+          created_at?: string
+          crypto?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          max_limit?: number
+          min_limit?: number
+          notes?: string | null
+          payment_methods?: string[]
+          price?: number
+          type?: Database["public"]["Enums"]["ad_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           completion_rate: number
@@ -111,6 +165,7 @@ export type Database = {
       }
     }
     Enums: {
+      ad_type: "buy" | "sell"
       tx_status: "completed" | "pending" | "failed" | "cancelled"
       tx_type:
         | "deposit"
@@ -246,6 +301,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ad_type: ["buy", "sell"],
       tx_status: ["completed", "pending", "failed", "cancelled"],
       tx_type: [
         "deposit",
