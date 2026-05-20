@@ -81,6 +81,30 @@ function ProfilePage() {
       </Card>
 
       <Card className="border-border">
+        <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-lg"><ShieldCheck className="h-5 w-5 text-primary" />Identity Verification</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium">Verification status</p>
+              <p className="text-xs text-muted-foreground">Required for P2P trading</p>
+            </div>
+            <KycBadge status={kycStatus} />
+          </div>
+          {kycStatus === "unverified" || kycStatus === "rejected" ? (
+            <Button className="w-full" onClick={() => setKycOpen(true)}>
+              {kycStatus === "rejected" ? "Resubmit Identity" : "Verify Identity"}
+            </Button>
+          ) : kycStatus === "pending" ? (
+            <p className="text-xs text-muted-foreground">Your submission is under review.</p>
+          ) : null}
+          {isAdmin && (
+            <Button asChild variant="outline" className="w-full"><Link to="/admin/kyc">Open admin review</Link></Button>
+          )}
+        </CardContent>
+      </Card>
+
+
+      <Card className="border-border">
         <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-lg"><Shield className="h-5 w-5 text-primary" />Verification Level</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
