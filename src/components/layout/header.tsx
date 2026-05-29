@@ -1,9 +1,10 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Bell, ChevronDown, Settings, User, LogIn } from "lucide-react";
+import { Bell, ChevronDown, Settings, User, LogIn, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/lib/mock-data";
+import { useIsAdmin } from "@/hooks/use-kyc";
 import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
