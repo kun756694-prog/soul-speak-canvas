@@ -19,6 +19,7 @@ export function Header() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: profile } = useProfile();
+  const { data: isAdmin } = useIsAdmin();
   const displayName = profile?.name || user?.email?.split("@")[0] || "Guest";
 
   const logout = async () => {
