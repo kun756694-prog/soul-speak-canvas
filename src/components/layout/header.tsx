@@ -48,6 +48,11 @@ export function Header() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
+              {isAdmin && (
+                <Button asChild size="sm" variant="outline" className="gap-1.5 border-primary/40 text-primary hover:bg-primary/10">
+                  <Link to="/admin"><ShieldCheck className="h-4 w-4" />Admin</Link>
+                </Button>
+              )}
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary" />
