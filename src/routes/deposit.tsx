@@ -1,13 +1,41 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, Gift } from "lucide-react";
+import { ArrowLeft, Copy, Check, Wallet, Smartphone } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import { useWalletMutations } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/deposit")({ component: DepositPage });
+
+const TNG_NUMBER = "161595298259";
+const CRYPTO_WALLET = "0x13682F7eF346ad1c579755bA01e2AE4241991c7A";
+
+function CopyRow({ label, value, icon: Icon }: { label: string; value: string; icon: React.ComponentType<{ className?: string }> }) {
+  const [copied, setCopied] = useState(false);
+  const onCopy = async () => {
+    await navigator.clipboard.writeText(value);
+    setCopied(true);
+    toast.success(`${label} copied`);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <div className="rounded-lg border border-border bg-card p-3">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Icon className="h-3.5 w-3.5" />
+        {label}
+      </div>
+      <div className="mt-1 flex items-center justify-between gap-2">
+        <code className="break-all text-sm font-medium text-foreground">{value}</code>
+        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onCopy}>
+          {copied ? <Check className="h-4 w-4 text-[oklch(0.72_0.19_160)]" /> : <Copy className="h-4 w-4" />}
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 function DepositPage() {
   const [amount, setAmount] = useState("");
@@ -26,7 +54,7 @@ function DepositPage() {
     setLoading(true);
     try {
       await deposit.mutateAsync(n);
-      setSuccess(`Successfully deposited ${n} POINT!`);
+      setSuccess(`Successfully requested ${n} POINT!`);
       setAmount("");
       setTimeout(() => navigate({ to: "/" }), 1500);
     } catch (e: unknown) {
@@ -43,17 +71,24 @@ function DepositPage() {
         <h1 className="text-lg font-semibold">Deposit Points</h1>
       </div>
       <div className="mx-auto max-w-md space-y-6 p-4">
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="flex items-center gap-4 p-4">
-            <div className="rounded-full bg-primary/10 p-3"><Gift className="h-6 w-6 text-primary" /></div>
-            <div>
-              <p className="font-medium">Demo Mode</p>
-              <p className="text-sm text-muted-foreground">Deposits are simulated in this demo.</p>
-            </div>
+        <Card className="border-border">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Payment Methods</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Send your payment to one of the addresses below, then submit your deposit request.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <CopyRow label="Touch 'n Go (TNG)" value={TNG_NUMBER} icon={Smartphone} />
+            <CopyRow label="Crypto Wallet (USDT/ETH — BEP20/ERC20)" value={CRYPTO_WALLET} icon={Wallet} />
+            <p className="text-xs text-muted-foreground">
+              After paying, enter the amount below. Admin will verify and credit your points.
+            </p>
           </CardContent>
         </Card>
+
         <Card className="border-border">
-          <CardHeader><CardTitle>Add Points</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Submit Deposit Request</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={handleDeposit} className="space-y-4">
               <div className="space-y-2">
@@ -68,7 +103,7 @@ function DepositPage() {
               {error && <p className="text-sm text-destructive">{error}</p>}
               {success && <p className="text-sm text-[oklch(0.72_0.19_160)]">{success}</p>}
               <Button type="submit" className="w-full" size="lg" disabled={loading || !amount}>
-                {loading ? "Processing..." : "Deposit Points"}
+                {loading ? "Processing..." : "Submit Request"}
               </Button>
             </form>
           </CardContent>
