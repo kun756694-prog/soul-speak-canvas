@@ -1,9 +1,10 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Bell, ChevronDown, Settings, User, LogIn } from "lucide-react";
+import { Bell, ChevronDown, Settings, User, LogIn, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/lib/mock-data";
+import { useIsAdmin } from "@/hooks/use-kyc";
 import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
@@ -18,6 +19,7 @@ export function Header() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: profile } = useProfile();
+  const { data: isAdmin } = useIsAdmin();
   const displayName = profile?.name || user?.email?.split("@")[0] || "Guest";
 
   const logout = async () => {
@@ -46,6 +48,11 @@ export function Header() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
+              {isAdmin && (
+                <Button asChild size="sm" variant="outline" className="gap-1.5 border-primary/40 text-primary hover:bg-primary/10">
+                  <Link to="/admin"><ShieldCheck className="h-4 w-4" />Admin</Link>
+                </Button>
+              )}
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-primary" />
