@@ -10,12 +10,8 @@ import { useAuth } from "@/hooks/use-auth";
 export const Route = createFileRoute("/")({ component: Home });
 
 function Home() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const { balance, transactions } = useWallet();
-
-  if (loading) {
-    return <div className="p-8 text-center text-muted-foreground">Loading…</div>;
-  }
 
   if (!user) {
     return (
