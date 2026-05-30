@@ -19,6 +19,8 @@ interface Submission {
   full_name: string;
   id_type: string;
   document_path: string;
+  selfie_path: string | null;
+  level: number;
   status: "unverified" | "pending" | "verified" | "rejected";
   submitted_at: string;
   notes: string | null;
