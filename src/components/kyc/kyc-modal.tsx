@@ -72,11 +72,10 @@ export function KycModal({ open, onOpenChange, level = 1 }: Props) {
         full_name: fullName.trim() || (user.email ?? "Applicant"),
         id_type: idType,
         document_path: path,
-        // @ts-expect-error - new columns from migration
         selfie_path: selfiePath,
         level,
         status: "pending",
-      } as any);
+      });
       if (error) throw error;
     },
     onSuccess: () => {

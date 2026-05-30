@@ -42,7 +42,6 @@ export function useKycLevel() {
         supabase.from("profiles").select("kyc_level").eq("id", uid!).maybeSingle(),
         supabase
           .from("kyc_submissions")
-          // @ts-expect-error - new columns
           .select("level,status,submitted_at,notes")
           .eq("user_id", uid!)
           .order("submitted_at", { ascending: false }),
