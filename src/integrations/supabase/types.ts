@@ -225,8 +225,19 @@ export type Database = {
         }
         Returns: boolean
       }
+      lookup_account: {
+        Args: { _recipient_id: string }
+        Returns: {
+          id: string
+          name: string
+        }[]
+      }
       transfer_points: {
         Args: { _amount: number; _notes: string; _username: string }
+        Returns: undefined
+      }
+      transfer_points_by_id: {
+        Args: { _amount: number; _notes: string; _recipient_id: string }
         Returns: undefined
       }
       withdraw_points: {
