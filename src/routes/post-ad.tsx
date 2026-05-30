@@ -5,8 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useGeo } from "@/hooks/use-geo";
-import { useKycStatus } from "@/hooks/use-kyc";
-import { KycBadge } from "@/components/kyc/kyc-badge";
+import { useKycLevel } from "@/hooks/use-kyc";
 import { CURRENCIES, PAYMENT_METHODS, isSupportedCurrency } from "@/lib/currencies";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +22,8 @@ function PostAdPage() {
   const navigate = useNavigate();
   const geo = useGeo();
   const queryClient = useQueryClient();
-  const { data: kycStatus = "unverified", isLoading: kycLoading } = useKycStatus();
+  const { data: kyc, isLoading: kycLoading } = useKycLevel();
+  const approvedLevel = kyc?.approvedLevel ?? 0;
 
   const [type, setType] = useState<"buy" | "sell">("sell");
   const [currency, setCurrency] = useState<string>("USD");
@@ -80,12 +80,11 @@ function PostAdPage() {
       </div>
     );
   }
-  if (!kycLoading && kycStatus !== "verified") {
+  if (!kycLoading && approvedLevel < 2) {
     return (
       <div className="mx-auto max-w-md p-6 text-center space-y-3">
-        <div className="flex justify-center"><KycBadge status={kycStatus} /></div>
-        <h2 className="text-lg font-semibold">Identity verification required</h2>
-        <p className="text-sm text-muted-foreground">Please complete your Identity Verification (KYC) to unlock P2P trading.</p>
+        <h2 className="text-lg font-semibold">Level 2 verification required</h2>
+        <p className="text-sm text-muted-foreground">Posting P2P ads requires Level 2 (Live Selfie + Government ID).</p>
         <Button asChild><Link to="/profile">Go to verification</Link></Button>
       </div>
     );

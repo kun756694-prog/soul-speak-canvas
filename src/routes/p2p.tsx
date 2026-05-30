@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { formatNumber } from "@/lib/mock-data";
 import { CURRENCIES, isSupportedCurrency } from "@/lib/currencies";
 import { useGeo } from "@/hooks/use-geo";
-import { useKycStatus } from "@/hooks/use-kyc";
+import { useKycLevel } from "@/hooks/use-kyc";
 import { KycModal } from "@/components/kyc/kyc-modal";
 
 export const Route = createFileRoute("/p2p")({ component: P2PPage });
@@ -34,7 +34,9 @@ interface Ad {
 function P2PPage() {
   const geo = useGeo();
   const navigate = useNavigate();
-  const { data: kycStatus = "unverified" } = useKycStatus();
+  const { data: kyc } = useKycLevel();
+  const approvedLevel = kyc?.approvedLevel ?? 0;
+  const level2Status = kyc?.perLevel[2].status ?? "unverified";
   const [tradeType, setTradeType] = useState<"buy" | "sell">("buy");
   const [selectedFiat, setSelectedFiat] = useState<string>("USD");
   const [fiatTouched, setFiatTouched] = useState(false);
@@ -46,7 +48,7 @@ function P2PPage() {
   const [kycFormOpen, setKycFormOpen] = useState(false);
 
   const handlePostAd = () => {
-    if (kycStatus === "verified") navigate({ to: "/post-ad" });
+    if (approvedLevel >= 2) navigate({ to: "/post-ad" });
     else setKycGateOpen(true);
   };
 
@@ -216,20 +218,20 @@ function P2PPage() {
       <Dialog open={kycGateOpen} onOpenChange={setKycGateOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><ShieldAlert className="h-5 w-5 text-destructive" />Identity verification required</DialogTitle>
-            <DialogDescription>Please complete your Identity Verification (KYC) to unlock P2P trading.</DialogDescription>
+            <DialogTitle className="flex items-center gap-2"><ShieldAlert className="h-5 w-5 text-destructive" />Level 2 verification required</DialogTitle>
+            <DialogDescription>Posting P2P ads requires Level 2 (Selfie + Government ID) verification.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setKycGateOpen(false)}>Later</Button>
-            {kycStatus === "pending" ? (
+            {level2Status === "pending" ? (
               <Button disabled>Pending review…</Button>
             ) : (
-              <Button onClick={() => { setKycGateOpen(false); setKycFormOpen(true); }}>Verify Identity</Button>
+              <Button onClick={() => { setKycGateOpen(false); setKycFormOpen(true); }}>Verify Level 2</Button>
             )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <KycModal open={kycFormOpen} onOpenChange={setKycFormOpen} />
+      <KycModal open={kycFormOpen} onOpenChange={setKycFormOpen} level={2} />
     </div>
   );
 }

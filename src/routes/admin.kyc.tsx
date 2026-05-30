@@ -19,6 +19,8 @@ interface Submission {
   full_name: string;
   id_type: string;
   document_path: string;
+  selfie_path: string | null;
+  level: number;
   status: "unverified" | "pending" | "verified" | "rejected";
   submitted_at: string;
   notes: string | null;
@@ -41,7 +43,7 @@ function AdminKycPage() {
     queryFn: async (): Promise<Submission[]> => {
       const { data, error } = await supabase
         .from("kyc_submissions")
-        .select("id,user_id,full_name,id_type,document_path,status,submitted_at,notes")
+        .select("id,user_id,full_name,id_type,document_path,selfie_path,level,status,submitted_at,notes")
         .eq("status", filter)
         .order("submitted_at", { ascending: false })
         .limit(100);
@@ -113,14 +115,20 @@ function AdminKycPage() {
             <CardContent className="p-4 space-y-3">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <p className="font-medium">{s.full_name}</p>
-                  <p className="text-xs text-muted-foreground">{s.id_type} · UID {s.user_id.slice(0, 8)}…</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="inline-flex items-center rounded-full bg-primary/15 text-primary border border-primary/30 px-2 py-0.5 text-xs font-medium">Level {s.level ?? 1}</span>
+                    <p className="font-medium">{s.full_name}</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">{s.id_type} · UID {s.user_id.slice(0, 8)}…</p>
                   <p className="text-xs text-muted-foreground">Submitted {new Date(s.submitted_at).toLocaleString()}</p>
                 </div>
                 <KycBadge status={s.status} />
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" onClick={() => openDoc(s.document_path)}>View document</Button>
+                {s.selfie_path && (
+                  <Button size="sm" variant="outline" onClick={() => openDoc(s.selfie_path!)}>View selfie</Button>
+                )}
                 {s.status !== "verified" && (
                   <Button size="sm" className="bg-[oklch(0.72_0.19_160)] hover:bg-[oklch(0.65_0.19_160)] text-white"
                     disabled={updateStatus.isPending}
