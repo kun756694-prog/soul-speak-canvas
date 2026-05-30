@@ -54,7 +54,7 @@ function DepositPage() {
     setLoading(true);
     try {
       await deposit.mutateAsync(n);
-      setSuccess(`Successfully requested ${n} POINT!`);
+      setSuccess(`Deposit request for ${n} POINT submitted. Admin will verify and credit your balance.`);
       setAmount("");
       setTimeout(() => navigate({ to: "/" }), 1500);
     } catch (e: unknown) {
