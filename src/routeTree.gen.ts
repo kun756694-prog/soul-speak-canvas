@@ -23,6 +23,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
+import { Route as AdminDepositsRouteImport } from './routes/admin.deposits'
 
 const WithdrawRoute = WithdrawRouteImport.update({
   id: '/withdraw',
@@ -94,6 +95,11 @@ const AdminKycRoute = AdminKycRouteImport.update({
   path: '/admin/kyc',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDepositsRoute = AdminDepositsRouteImport.update({
+  id: '/admin/deposits',
+  path: '/admin/deposits',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/transfer': typeof TransferRoute
   '/wallet': typeof WalletRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/deposits': typeof AdminDepositsRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/transfer': typeof TransferRoute
   '/wallet': typeof WalletRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/deposits': typeof AdminDepositsRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin': typeof AdminIndexRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/transfer': typeof TransferRoute
   '/wallet': typeof WalletRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/deposits': typeof AdminDepositsRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/wallet'
     | '/withdraw'
+    | '/admin/deposits'
     | '/admin/kyc'
     | '/admin/users'
     | '/admin/'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/wallet'
     | '/withdraw'
+    | '/admin/deposits'
     | '/admin/kyc'
     | '/admin/users'
     | '/admin'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/wallet'
     | '/withdraw'
+    | '/admin/deposits'
     | '/admin/kyc'
     | '/admin/users'
     | '/admin/'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   TransferRoute: typeof TransferRoute
   WalletRoute: typeof WalletRoute
   WithdrawRoute: typeof WithdrawRoute
+  AdminDepositsRoute: typeof AdminDepositsRoute
   AdminKycRoute: typeof AdminKycRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKycRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/deposits': {
+      id: '/admin/deposits'
+      path: '/admin/deposits'
+      fullPath: '/admin/deposits'
+      preLoaderRoute: typeof AdminDepositsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   TransferRoute: TransferRoute,
   WalletRoute: WalletRoute,
   WithdrawRoute: WithdrawRoute,
+  AdminDepositsRoute: AdminDepositsRoute,
   AdminKycRoute: AdminKycRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -334,3 +355,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
