@@ -14,6 +14,9 @@ import { CURRENCIES, isSupportedCurrency } from "@/lib/currencies";
 import { useGeo } from "@/hooks/use-geo";
 import { useKycLevel } from "@/hooks/use-kyc";
 import { KycModal } from "@/components/kyc/kyc-modal";
+import { ChatDialog } from "@/components/p2p/chat-dialog";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/p2p")({ component: P2PPage });
 
@@ -34,6 +37,7 @@ interface Ad {
 function P2PPage() {
   const geo = useGeo();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: kyc } = useKycLevel();
   const approvedLevel = kyc?.approvedLevel ?? 0;
   const level2Status = kyc?.perLevel[2].status ?? "unverified";
@@ -43,7 +47,10 @@ function P2PPage() {
   const [amount, setAmount] = useState("");
   const [selected, setSelected] = useState<Ad | null>(null);
   const [orderAmount, setOrderAmount] = useState("");
-  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [placing, setPlacing] = useState(false);
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMeta, setChatMeta] = useState<{ amount: number; fiat: number; currency: string; crypto: string } | null>(null);
   const [kycGateOpen, setKycGateOpen] = useState(false);
   const [kycFormOpen, setKycFormOpen] = useState(false);
 
@@ -85,9 +92,38 @@ function P2PPage() {
     parseFloat(orderAmount) >= selected.min_limit &&
     parseFloat(orderAmount) <= selected.max_limit;
 
-  const placeOrder = () => {
-    setOrderPlaced(true);
-    setTimeout(() => { setSelected(null); setOrderPlaced(false); setOrderAmount(""); }, 2000);
+  const placeOrder = async () => {
+    if (!selected || !user || !isValidOrder) return;
+    const buyerId = tradeType === "buy" ? user.id : selected.user_id;
+    const sellerId = tradeType === "buy" ? selected.user_id : user.id;
+    if (buyerId === sellerId) {
+      toast.error("You can't trade with your own ad");
+      return;
+    }
+    setPlacing(true);
+    const fiat = parseFloat(orderAmount);
+    const { data, error } = await supabase
+      .from("p2p_orders")
+      .insert({
+        ad_id: selected.id,
+        buyer_id: buyerId,
+        seller_id: sellerId,
+        amount: cryptoAmt,
+        fiat_amount: fiat,
+        currency: selected.currency,
+      })
+      .select("id")
+      .single();
+    setPlacing(false);
+    if (error || !data) {
+      toast.error(error?.message ?? "Failed to start order");
+      return;
+    }
+    setChatMeta({ amount: cryptoAmt, fiat, currency: selected.currency, crypto: selected.crypto });
+    setActiveOrderId(data.id);
+    setChatOpen(true);
+    setSelected(null);
+    setOrderAmount("");
   };
 
   return (
@@ -205,12 +241,13 @@ function P2PPage() {
                 <Input type="number" value={orderAmount} onChange={(e) => setOrderAmount(e.target.value)} placeholder={`Min ${formatNumber(selected.min_limit, 0)}`} />
                 {cryptoAmt > 0 && <p className="text-sm text-muted-foreground">You will {tradeType === "buy" ? "receive" : "send"}: <span className="font-bold text-foreground">{formatNumber(cryptoAmt)} {selected.crypto}</span></p>}
               </div>
-              {orderPlaced && <p className="text-sm text-[oklch(0.72_0.19_160)]">Order placed (simulated)!</p>}
             </div>
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelected(null)}>Cancel</Button>
-            <Button disabled={!isValidOrder || orderPlaced} onClick={placeOrder}>Place Order</Button>
+            <Button disabled={!isValidOrder || placing} onClick={placeOrder}>
+              {placing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Start Order & Chat"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -232,6 +269,13 @@ function P2PPage() {
         </DialogContent>
       </Dialog>
       <KycModal open={kycFormOpen} onOpenChange={setKycFormOpen} level={2} />
+      <ChatDialog
+        open={chatOpen}
+        onOpenChange={(v) => { setChatOpen(v); if (!v) setActiveOrderId(null); }}
+        orderId={activeOrderId}
+        counterpartyLabel={selected ? `User ${selected.user_id.slice(0, 6)}` : "trader"}
+        meta={chatMeta}
+      />
     </div>
   );
 }

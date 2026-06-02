@@ -113,6 +113,85 @@ export type Database = {
         }
         Relationships: []
       }
+      p2p_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          order_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          order_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "p2p_messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "p2p_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      p2p_orders: {
+        Row: {
+          ad_id: string
+          amount: number
+          buyer_id: string
+          created_at: string
+          currency: string
+          fiat_amount: number
+          id: string
+          seller_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ad_id: string
+          amount: number
+          buyer_id: string
+          created_at?: string
+          currency: string
+          fiat_amount: number
+          id?: string
+          seller_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ad_id?: string
+          amount?: number
+          buyer_id?: string
+          created_at?: string
+          currency?: string
+          fiat_amount?: number
+          id?: string
+          seller_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "p2p_orders_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "p2p_ads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           completion_rate: number
