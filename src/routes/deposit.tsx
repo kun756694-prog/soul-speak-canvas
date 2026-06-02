@@ -97,6 +97,9 @@ function DepositPage() {
               <div className="space-y-2">
                 <Label htmlFor="amount">Amount (POINT)</Label>
                 <Input id="amount" type="number" placeholder="Enter amount" value={amount} onChange={(e) => setAmount(e.target.value)} min="1" step="1" className="text-lg h-12" />
+                <p className="text-xs text-muted-foreground">
+                  ≈ <span className="font-semibold text-foreground">${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</span> (1 POINT = $1)
+                </p>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {quickAmounts.map((q) => (
