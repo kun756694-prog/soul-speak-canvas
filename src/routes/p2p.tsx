@@ -269,6 +269,13 @@ function P2PPage() {
         </DialogContent>
       </Dialog>
       <KycModal open={kycFormOpen} onOpenChange={setKycFormOpen} level={2} />
+      <ChatDialog
+        open={chatOpen}
+        onOpenChange={(v) => { setChatOpen(v); if (!v) setActiveOrderId(null); }}
+        orderId={activeOrderId}
+        counterpartyLabel={selected ? `User ${selected.user_id.slice(0, 6)}` : "trader"}
+        meta={chatMeta}
+      />
     </div>
   );
 }
