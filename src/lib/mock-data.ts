@@ -96,12 +96,16 @@ export function useWalletMutations() {
   };
 
   const deposit = useMutation({
-    mutationFn: async (amount: number) => {
-      const { error } = await supabase.rpc("deposit_points", { _amount: amount });
+    mutationFn: async (vars: { amount: number; receiptPath?: string | null }) => {
+      const { error } = await supabase.rpc("deposit_points", {
+        _amount: vars.amount,
+        _receipt_path: vars.receiptPath ?? null,
+      });
       if (error) throw error;
     },
     onSuccess: invalidate,
   });
+
 
   const withdraw = useMutation({
     mutationFn: async (vars: { amount: number; address: string }) => {
