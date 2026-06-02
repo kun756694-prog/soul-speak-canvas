@@ -31,7 +31,9 @@ function AdminHub() {
   const cards = [
     { to: "/admin/users", title: "User Management", desc: "Promote admins, adjust point balances, set KYC status.", Icon: Users },
     { to: "/admin/kyc", title: "KYC Review", desc: "Approve or reject identity submissions.", Icon: BadgeCheck },
+    { to: "/admin/deposits", title: "Deposit Review", desc: "Verify payment receipts and credit pending deposits.", Icon: Wallet },
   ] as const;
+
 
   return (
     <div className="mx-auto max-w-3xl space-y-4 p-4">
