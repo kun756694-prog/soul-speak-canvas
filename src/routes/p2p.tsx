@@ -92,9 +92,38 @@ function P2PPage() {
     parseFloat(orderAmount) >= selected.min_limit &&
     parseFloat(orderAmount) <= selected.max_limit;
 
-  const placeOrder = () => {
-    setOrderPlaced(true);
-    setTimeout(() => { setSelected(null); setOrderPlaced(false); setOrderAmount(""); }, 2000);
+  const placeOrder = async () => {
+    if (!selected || !user || !isValidOrder) return;
+    const buyerId = tradeType === "buy" ? user.id : selected.user_id;
+    const sellerId = tradeType === "buy" ? selected.user_id : user.id;
+    if (buyerId === sellerId) {
+      toast.error("You can't trade with your own ad");
+      return;
+    }
+    setPlacing(true);
+    const fiat = parseFloat(orderAmount);
+    const { data, error } = await supabase
+      .from("p2p_orders")
+      .insert({
+        ad_id: selected.id,
+        buyer_id: buyerId,
+        seller_id: sellerId,
+        amount: cryptoAmt,
+        fiat_amount: fiat,
+        currency: selected.currency,
+      })
+      .select("id")
+      .single();
+    setPlacing(false);
+    if (error || !data) {
+      toast.error(error?.message ?? "Failed to start order");
+      return;
+    }
+    setChatMeta({ amount: cryptoAmt, fiat, currency: selected.currency, crypto: selected.crypto });
+    setActiveOrderId(data.id);
+    setChatOpen(true);
+    setSelected(null);
+    setOrderAmount("");
   };
 
   return (
