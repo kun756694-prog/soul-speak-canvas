@@ -241,12 +241,13 @@ function P2PPage() {
                 <Input type="number" value={orderAmount} onChange={(e) => setOrderAmount(e.target.value)} placeholder={`Min ${formatNumber(selected.min_limit, 0)}`} />
                 {cryptoAmt > 0 && <p className="text-sm text-muted-foreground">You will {tradeType === "buy" ? "receive" : "send"}: <span className="font-bold text-foreground">{formatNumber(cryptoAmt)} {selected.crypto}</span></p>}
               </div>
-              {orderPlaced && <p className="text-sm text-[oklch(0.72_0.19_160)]">Order placed (simulated)!</p>}
             </div>
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelected(null)}>Cancel</Button>
-            <Button disabled={!isValidOrder || orderPlaced} onClick={placeOrder}>Place Order</Button>
+            <Button disabled={!isValidOrder || placing} onClick={placeOrder}>
+              {placing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Start Order & Chat"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
