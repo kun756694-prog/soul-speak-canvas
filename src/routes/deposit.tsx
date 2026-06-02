@@ -37,6 +37,8 @@ function CopyRow({ label, value, icon: Icon }: { label: string; value: string; i
   );
 }
 
+const POINT_TO_USD = 1; // 1 POINT = $1 USD
+
 function DepositPage() {
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -45,6 +47,7 @@ function DepositPage() {
   const navigate = useNavigate();
   const { deposit } = useWalletMutations();
   const quickAmounts = [100, 500, 1000, 5000];
+  const usdValue = (parseFloat(amount) || 0) * POINT_TO_USD;
 
   const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +78,7 @@ function DepositPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Payment Methods</CardTitle>
             <p className="text-xs text-muted-foreground">
-              Send your payment to one of the addresses below, then submit your deposit request.
+              Exchange rate: <span className="font-semibold text-foreground">1 POINT = $1 USD</span>. Send your payment to one of the addresses below, then submit your deposit request.
             </p>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -94,6 +97,9 @@ function DepositPage() {
               <div className="space-y-2">
                 <Label htmlFor="amount">Amount (POINT)</Label>
                 <Input id="amount" type="number" placeholder="Enter amount" value={amount} onChange={(e) => setAmount(e.target.value)} min="1" step="1" className="text-lg h-12" />
+                <p className="text-xs text-muted-foreground">
+                  ≈ <span className="font-semibold text-foreground">${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</span> (1 POINT = $1)
+                </p>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {quickAmounts.map((q) => (
