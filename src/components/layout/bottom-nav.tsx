@@ -1,9 +1,10 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Repeat2, Wallet, Clock, User } from "lucide-react";
+import { Home, Repeat2, MessageSquare, Wallet, Clock, User } from "lucide-react";
 
 const items = [
   { href: "/", label: "Home", icon: Home },
   { href: "/p2p", label: "P2P", icon: Repeat2 },
+  { href: "/orders", label: "Chats", icon: MessageSquare },
   { href: "/wallet", label: "Wallet", icon: Wallet },
   { href: "/history", label: "History", icon: Clock },
   { href: "/profile", label: "Profile", icon: User },
