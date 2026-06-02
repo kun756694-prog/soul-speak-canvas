@@ -37,6 +37,8 @@ function CopyRow({ label, value, icon: Icon }: { label: string; value: string; i
   );
 }
 
+const POINT_TO_USD = 1; // 1 POINT = $1 USD
+
 function DepositPage() {
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -45,6 +47,7 @@ function DepositPage() {
   const navigate = useNavigate();
   const { deposit } = useWalletMutations();
   const quickAmounts = [100, 500, 1000, 5000];
+  const usdValue = (parseFloat(amount) || 0) * POINT_TO_USD;
 
   const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
