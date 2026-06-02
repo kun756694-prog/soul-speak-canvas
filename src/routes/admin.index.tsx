@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { ShieldCheck, Users, BadgeCheck } from "lucide-react";
+import { ShieldCheck, Users, BadgeCheck, Wallet } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-kyc";
 import { Card, CardContent } from "@/components/ui/card";
