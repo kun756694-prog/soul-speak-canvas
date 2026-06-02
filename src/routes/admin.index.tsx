@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { ShieldCheck, Users, BadgeCheck } from "lucide-react";
+import { ShieldCheck, Users, BadgeCheck, Wallet } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-kyc";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,7 +31,9 @@ function AdminHub() {
   const cards = [
     { to: "/admin/users", title: "User Management", desc: "Promote admins, adjust point balances, set KYC status.", Icon: Users },
     { to: "/admin/kyc", title: "KYC Review", desc: "Approve or reject identity submissions.", Icon: BadgeCheck },
+    { to: "/admin/deposits", title: "Deposit Review", desc: "Verify payment receipts and credit pending deposits.", Icon: Wallet },
   ] as const;
+
 
   return (
     <div className="mx-auto max-w-3xl space-y-4 p-4">

@@ -230,6 +230,7 @@ export type Database = {
           fee: number | null
           id: string
           notes: string | null
+          receipt_path: string | null
           status: Database["public"]["Enums"]["tx_status"]
           type: Database["public"]["Enums"]["tx_type"]
           user_id: string
@@ -241,6 +242,7 @@ export type Database = {
           fee?: number | null
           id?: string
           notes?: string | null
+          receipt_path?: string | null
           status?: Database["public"]["Enums"]["tx_status"]
           type: Database["public"]["Enums"]["tx_type"]
           user_id: string
@@ -252,6 +254,7 @@ export type Database = {
           fee?: number | null
           id?: string
           notes?: string | null
+          receipt_path?: string | null
           status?: Database["public"]["Enums"]["tx_status"]
           type?: Database["public"]["Enums"]["tx_type"]
           user_id?: string
@@ -302,7 +305,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      deposit_points: { Args: { _amount: number }; Returns: undefined }
+      deposit_points:
+        | { Args: { _amount: number }; Returns: undefined }
+        | {
+            Args: { _amount: number; _receipt_path?: string }
+            Returns: undefined
+          }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

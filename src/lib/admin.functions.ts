@@ -137,3 +137,117 @@ export const setUserKycStatus = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const approveDeposit = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ transactionId: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context.userId);
+
+    const { data: tx, error: txErr } = await supabaseAdmin
+      .from("transactions")
+      .select("id,user_id,amount,type,status")
+      .eq("id", data.transactionId)
+      .maybeSingle();
+    if (txErr) throw new Error(txErr.message);
+    if (!tx) throw new Error("Transaction not found");
+    if (tx.type !== "deposit") throw new Error("Not a deposit transaction");
+    if (tx.status !== "pending") throw new Error(`Already ${tx.status}`);
+
+    const { data: w, error: wErr } = await supabaseAdmin
+      .from("wallets").select("balance").eq("user_id", tx.user_id).maybeSingle();
+    if (wErr) throw new Error(wErr.message);
+    const next = Number(w?.balance ?? 0) + Number(tx.amount);
+
+    const { error: upWErr } = await supabaseAdmin
+      .from("wallets")
+      .upsert({ user_id: tx.user_id, balance: next, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+    if (upWErr) throw new Error(upWErr.message);
+
+    const { error: upTxErr } = await supabaseAdmin
+      .from("transactions")
+      .update({ status: "completed", notes: "Deposit approved by admin" })
+      .eq("id", tx.id);
+    if (upTxErr) throw new Error(upTxErr.message);
+
+    return { ok: true, balance: next };
+  });
+
+export const rejectDeposit = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ transactionId: z.string().uuid(), reason: z.string().max(200).optional() }).parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context.userId);
+    const { error } = await supabaseAdmin
+      .from("transactions")
+      .update({ status: "failed", notes: data.reason ? `Rejected: ${data.reason}` : "Rejected by admin" })
+      .eq("id", data.transactionId)
+      .eq("type", "deposit")
+      .eq("status", "pending");
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export interface AdminDepositRow {
+  id: string;
+  user_id: string;
+  user_name: string | null;
+  user_email: string | null;
+  amount: number;
+  status: string;
+  created_at: string;
+  notes: string | null;
+  receipt_path: string | null;
+}
+
+export const listDepositsAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ status: z.enum(["pending", "completed", "failed"]).default("pending") }).parse(d ?? {}),
+  )
+  .handler(async ({ context, data }): Promise<AdminDepositRow[]> => {
+    await assertAdmin(context.userId);
+
+    const { data: txs, error } = await supabaseAdmin
+      .from("transactions")
+      .select("id,user_id,amount,status,created_at,notes,receipt_path")
+      .eq("type", "deposit")
+      .eq("status", data.status)
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) throw new Error(error.message);
+
+    const userIds = Array.from(new Set((txs ?? []).map((t: any) => t.user_id)));
+    const [{ data: profiles }, { data: usersList }] = await Promise.all([
+      supabaseAdmin.from("profiles").select("id,name").in("id", userIds.length ? userIds : ["00000000-0000-0000-0000-000000000000"]),
+      supabaseAdmin.auth.admin.listUsers({ perPage: 500 }),
+    ]);
+    const nameMap = new Map((profiles ?? []).map((p: any) => [p.id, p.name]));
+    const emailMap = new Map((usersList?.users ?? []).map((u: any) => [u.id, u.email]));
+
+    return (txs ?? []).map((t: any) => ({
+      id: t.id,
+      user_id: t.user_id,
+      user_name: nameMap.get(t.user_id) ?? null,
+      user_email: emailMap.get(t.user_id) ?? null,
+      amount: Number(t.amount),
+      status: t.status,
+      created_at: t.created_at,
+      notes: t.notes,
+      receipt_path: t.receipt_path,
+    }));
+  });
+
+export const signDepositReceipt = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ path: z.string().min(1).max(500) }).parse(d))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context.userId);
+    const { data: signed, error } = await supabaseAdmin.storage
+      .from("deposit_receipts")
+      .createSignedUrl(data.path, 60 * 10);
+    if (error) throw new Error(error.message);
+    return { url: signed.signedUrl };
+  });
