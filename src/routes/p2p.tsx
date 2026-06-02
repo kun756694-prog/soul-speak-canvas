@@ -37,6 +37,7 @@ interface Ad {
 function P2PPage() {
   const geo = useGeo();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: kyc } = useKycLevel();
   const approvedLevel = kyc?.approvedLevel ?? 0;
   const level2Status = kyc?.perLevel[2].status ?? "unverified";
@@ -46,7 +47,10 @@ function P2PPage() {
   const [amount, setAmount] = useState("");
   const [selected, setSelected] = useState<Ad | null>(null);
   const [orderAmount, setOrderAmount] = useState("");
-  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [placing, setPlacing] = useState(false);
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMeta, setChatMeta] = useState<{ amount: number; fiat: number; currency: string; crypto: string } | null>(null);
   const [kycGateOpen, setKycGateOpen] = useState(false);
   const [kycFormOpen, setKycFormOpen] = useState(false);
 
