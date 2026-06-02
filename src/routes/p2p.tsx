@@ -14,6 +14,9 @@ import { CURRENCIES, isSupportedCurrency } from "@/lib/currencies";
 import { useGeo } from "@/hooks/use-geo";
 import { useKycLevel } from "@/hooks/use-kyc";
 import { KycModal } from "@/components/kyc/kyc-modal";
+import { ChatDialog } from "@/components/p2p/chat-dialog";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/p2p")({ component: P2PPage });
 
