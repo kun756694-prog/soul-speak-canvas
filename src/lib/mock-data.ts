@@ -16,8 +16,9 @@ export type TxType = "deposit" | "withdraw" | "p2p_buy" | "p2p_sell" | "transfer
 export type TxStatus = "completed" | "pending" | "failed" | "cancelled";
 export interface Transaction {
   id: string; type: TxType; amount: number; currency: string; status: TxStatus;
-  created_at: string; fee?: number | null; notes?: string | null;
+  created_at: string; fee?: number | null; notes?: string | null; receipt_path?: string | null;
 }
+
 
 export const walletAssets: Asset[] = [
   { symbol: "BTC", name: "Bitcoin", balance: 0.0524, usdValue: 3562.18, change24h: 2.34, color: "#F7931A" },
