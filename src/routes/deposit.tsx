@@ -78,7 +78,7 @@ function DepositPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Payment Methods</CardTitle>
             <p className="text-xs text-muted-foreground">
-              Send your payment to one of the addresses below, then submit your deposit request.
+              Exchange rate: <span className="font-semibold text-foreground">1 POINT = $1 USD</span>. Send your payment to one of the addresses below, then submit your deposit request.
             </p>
           </CardHeader>
           <CardContent className="space-y-3">
