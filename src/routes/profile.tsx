@@ -18,11 +18,15 @@ const LEVELS: { level: 1 | 2 | 3; label: string; desc: string; unlock: string }[
   { level: 3, label: "Address Verification", desc: "Utility bill or bank statement", unlock: "Raises trading limits" },
 ];
 
-const menuItems = [
+const menuItems: { icon: typeof Shield; label: string; to?: string }[] = [
   { icon: Shield, label: "Security Settings" },
   { icon: Bell, label: "Notifications" },
-  { icon: HelpCircle, label: "Help Center" },
-  { icon: FileText, label: "Terms of Service" },
+  { icon: HelpCircle, label: "Help Center", to: "/contact" },
+  { icon: FileText, label: "Privacy Policy", to: "/privacy" },
+  { icon: FileText, label: "Terms of Service", to: "/terms" },
+  { icon: FileText, label: "Cookie Policy", to: "/cookies" },
+  { icon: ShieldCheck, label: "AML / KYC Policy", to: "/aml-kyc" },
+  { icon: ShieldCheck, label: "Risk Disclosure", to: "/risk" },
 ];
 
 function ProfilePage() {
@@ -150,10 +154,19 @@ function ProfilePage() {
         <CardContent className="p-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            return (
-              <button key={item.label} className="flex w-full items-center justify-between rounded-lg p-3 hover:bg-accent transition-colors">
+            const inner = (
+              <>
                 <div className="flex items-center gap-3"><Icon className="h-5 w-5 text-muted-foreground" /><span>{item.label}</span></div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </>
+            );
+            return item.to ? (
+              <Link key={item.label} to={item.to} className="flex w-full items-center justify-between rounded-lg p-3 hover:bg-accent transition-colors">
+                {inner}
+              </Link>
+            ) : (
+              <button key={item.label} className="flex w-full items-center justify-between rounded-lg p-3 hover:bg-accent transition-colors">
+                {inner}
               </button>
             );
           })}

@@ -113,6 +113,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 import { Header } from "@/components/layout/header";
 import { BottomNav } from "@/components/layout/bottom-nav";
+import { SiteFooter } from "@/components/layout/site-footer";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -140,6 +141,7 @@ function RootComponent() {
       <div className="flex min-h-screen flex-col bg-background">
         <Header />
         <main className="flex-1 pb-16 md:pb-0"><Outlet /></main>
+        <SiteFooter />
         <BottomNav />
       </div>
       <Toaster />
