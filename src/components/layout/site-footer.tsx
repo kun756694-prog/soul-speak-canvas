@@ -32,7 +32,7 @@ const columns: { title: string; links: { to: string; label: string }[] }[] = [
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="mt-12 border-t border-border bg-card/30">
+    <footer className="mt-12 border-t border-border bg-card/30 pb-16 md:pb-0">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 md:grid-cols-4">
         <div>
           <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold">
