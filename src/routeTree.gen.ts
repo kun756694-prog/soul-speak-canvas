@@ -12,13 +12,19 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as TransferRouteImport } from './routes/transfer'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as RiskRouteImport } from './routes/risk'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PostAdRouteImport } from './routes/post-ad'
 import { Route as P2pRouteImport } from './routes/p2p'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DepositRouteImport } from './routes/deposit'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AmlKycRouteImport } from './routes/aml-kyc'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
@@ -40,9 +46,24 @@ const TransferRoute = TransferRouteImport.update({
   path: '/transfer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiskRoute = RiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostAdRoute = PostAdRouteImport.update({
@@ -70,9 +91,24 @@ const DepositRoute = DepositRouteImport.update({
   path: '/deposit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AmlKycRoute = AmlKycRouteImport.update({
+  id: '/aml-kyc',
+  path: '/aml-kyc',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -103,13 +139,19 @@ const AdminDepositsRoute = AdminDepositsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aml-kyc': typeof AmlKycRoute
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
   '/deposit': typeof DepositRoute
   '/history': typeof HistoryRoute
   '/orders': typeof OrdersRoute
   '/p2p': typeof P2pRoute
   '/post-ad': typeof PostAdRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
+  '/risk': typeof RiskRoute
+  '/terms': typeof TermsRoute
   '/transfer': typeof TransferRoute
   '/wallet': typeof WalletRoute
   '/withdraw': typeof WithdrawRoute
@@ -120,13 +162,19 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aml-kyc': typeof AmlKycRoute
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
   '/deposit': typeof DepositRoute
   '/history': typeof HistoryRoute
   '/orders': typeof OrdersRoute
   '/p2p': typeof P2pRoute
   '/post-ad': typeof PostAdRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
+  '/risk': typeof RiskRoute
+  '/terms': typeof TermsRoute
   '/transfer': typeof TransferRoute
   '/wallet': typeof WalletRoute
   '/withdraw': typeof WithdrawRoute
@@ -138,13 +186,19 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/aml-kyc': typeof AmlKycRoute
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
   '/deposit': typeof DepositRoute
   '/history': typeof HistoryRoute
   '/orders': typeof OrdersRoute
   '/p2p': typeof P2pRoute
   '/post-ad': typeof PostAdRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
+  '/risk': typeof RiskRoute
+  '/terms': typeof TermsRoute
   '/transfer': typeof TransferRoute
   '/wallet': typeof WalletRoute
   '/withdraw': typeof WithdrawRoute
@@ -157,13 +211,19 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/aml-kyc'
     | '/auth'
+    | '/contact'
+    | '/cookies'
     | '/deposit'
     | '/history'
     | '/orders'
     | '/p2p'
     | '/post-ad'
+    | '/privacy'
     | '/profile'
+    | '/risk'
+    | '/terms'
     | '/transfer'
     | '/wallet'
     | '/withdraw'
@@ -174,13 +234,19 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/aml-kyc'
     | '/auth'
+    | '/contact'
+    | '/cookies'
     | '/deposit'
     | '/history'
     | '/orders'
     | '/p2p'
     | '/post-ad'
+    | '/privacy'
     | '/profile'
+    | '/risk'
+    | '/terms'
     | '/transfer'
     | '/wallet'
     | '/withdraw'
@@ -191,13 +257,19 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/aml-kyc'
     | '/auth'
+    | '/contact'
+    | '/cookies'
     | '/deposit'
     | '/history'
     | '/orders'
     | '/p2p'
     | '/post-ad'
+    | '/privacy'
     | '/profile'
+    | '/risk'
+    | '/terms'
     | '/transfer'
     | '/wallet'
     | '/withdraw'
@@ -209,13 +281,19 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AmlKycRoute: typeof AmlKycRoute
   AuthRoute: typeof AuthRoute
+  ContactRoute: typeof ContactRoute
+  CookiesRoute: typeof CookiesRoute
   DepositRoute: typeof DepositRoute
   HistoryRoute: typeof HistoryRoute
   OrdersRoute: typeof OrdersRoute
   P2pRoute: typeof P2pRoute
   PostAdRoute: typeof PostAdRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
+  RiskRoute: typeof RiskRoute
+  TermsRoute: typeof TermsRoute
   TransferRoute: typeof TransferRoute
   WalletRoute: typeof WalletRoute
   WithdrawRoute: typeof WithdrawRoute
@@ -248,11 +326,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TransferRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risk': {
+      id: '/risk'
+      path: '/risk'
+      fullPath: '/risk'
+      preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/post-ad': {
@@ -290,11 +389,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DepositRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aml-kyc': {
+      id: '/aml-kyc'
+      path: '/aml-kyc'
+      fullPath: '/aml-kyc'
+      preLoaderRoute: typeof AmlKycRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -337,13 +457,19 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AmlKycRoute: AmlKycRoute,
   AuthRoute: AuthRoute,
+  ContactRoute: ContactRoute,
+  CookiesRoute: CookiesRoute,
   DepositRoute: DepositRoute,
   HistoryRoute: HistoryRoute,
   OrdersRoute: OrdersRoute,
   P2pRoute: P2pRoute,
   PostAdRoute: PostAdRoute,
+  PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
+  RiskRoute: RiskRoute,
+  TermsRoute: TermsRoute,
   TransferRoute: TransferRoute,
   WalletRoute: WalletRoute,
   WithdrawRoute: WithdrawRoute,
@@ -355,3 +481,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
